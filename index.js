@@ -188,7 +188,7 @@ function generateUUID() {
     // Concatenate the sections with dashes in the specified format
     const uuid = `${section1}-${section2}-${section3}-${section4}-${section5}`;
     
-    return uuid;
+    return String(uuid);
 }
 
 app.listen(port, () => {
