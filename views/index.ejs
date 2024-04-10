@@ -27,7 +27,7 @@
             <h1 id="header">Medical Appointment System</h1>
         </div>
         <div id="form-container">
-            <form action="/addAppointment" method="POST" class="appointment-form">
+            <form action="/addAppointment" method="POST" class="appointment-form" onsubmit="formatAndSubmit(event)">
                     <label for="region">Region:</label>
                     <select name="region" id="region">
                         <option value="L">Luzon</option>
@@ -45,25 +45,23 @@
                         <option value="A">Admitted</option>
                     </select><br><br>
                     <label for="queuetime">Queue Time</label>
-                    <input type="time" name="queuetime" id="queuetime" required><br><br>
+                    <input type="datetime-local" name="queuetime" id="queuetime" required><br><br>
                     <label for="queuedate">Queue Date</label>
                     <input type="date" name="queuedate" id="queuedate" required><br><br>
                     <label for="starttime">Start Time</label>
-                    <input type="time" name="starttime" id="starttime" required><br><br>
+                    <input type="datetime-local" name="starttime" id="starttime" required><br><br>
                     <label for="endtime">End Time</label>
-                    <input type="time" name="endtime" id="endtime" required><br><br>
+                    <input type="datetime-local" name="endtime" id="endtime" required><br><br>
                     <label for="type">Type:</label>
                     <select name="type" id="type" required>
                         <option value="CS">Consultation</option>
                         <option value="IP">Inpatient</option>
                     </select><br><br>
-                    <div class="virtual-appointment-container">
-                        <input type="checkbox" name="isvirtual" id="isvirtual">
-                        <span>Virtual Appointment</span>
-                    </div>
-                                   
-                    
-                                        
+                    <label for="isvirtual">Virtual Appointment:</label>
+                    <select name="isvirtual" id="isvirtual">
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select><br><br>
                     <button type="submit">Submit</button>
             </form>
         </div>
@@ -139,20 +137,20 @@
             var appointmentsBody = document.getElementById('appointments-body');
             appointmentsBody.innerHTML = '';
 
-                var tableTitle = document.getElementById('table-title');
-        switch(region) {
-            case 'luzon':
-                tableTitle.textContent = 'Luzon Appointments';
-                break;
-            case 'visayas':
-                tableTitle.textContent = 'Visayas Appointments';
-                break;
-            case 'mindanao':
-                tableTitle.textContent = 'Mindanao Appointments';
-                break;
-            default:
-                tableTitle.textContent = 'Appointments';
-        }
+            var tableTitle = document.getElementById('table-title');
+            switch(region) {
+                case 'luzon':
+                    tableTitle.textContent = 'Luzon Appointments';
+                    break;
+                case 'visayas':
+                    tableTitle.textContent = 'Visayas Appointments';
+                    break;
+                case 'mindanao':
+                    tableTitle.textContent = 'Mindanao Appointments';
+                    break;
+                default:
+                    tableTitle.textContent = 'Appointments';
+            }
 
             var appointments = await fetchAppointments(region);
             populateAppointmentsTable(appointments);
@@ -177,31 +175,61 @@
                     <td>${appointment.a_starttime}</td>
                     <td>${appointment.a_endtime}</td>
                     <td>${appointment.a_type}</td>
-                    <td>${appointment.a_isvirtual}</td>
+                    <td>${appointment.a_isvirtual}</td> 
                 `;
                 appointmentsBody.appendChild(row);
             });
         }
 
         function searchById() {
-    var input, filter, table, tr, td, i, txtValue;
-    input = document.getElementById("search-id");
-    filter = input.value.toUpperCase();
-    table = document.getElementById("appointments-table");
-    tr = table.getElementsByTagName("tr");
-    for (i = 0; i < tr.length; i++) {
-        td = tr[i].getElementsByTagName("td")[0]; 
-        if (td) {
-            txtValue = td.textContent || td.innerText;
-            if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                tr[i].style.display = "";
-            } else {
-                tr[i].style.display = "none";
+            var input, filter, table, tr, td, i, txtValue;
+            input = document.getElementById("search-id");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("appointments-table");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[0]; 
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
             }
         }
-    }
-}
 
+        function formatAndSubmit(event) {
+            event.preventDefault();
+            var queuetimeInput = document.getElementById("queuetime").value;
+            var starttimeInput = document.getElementById("starttime").value;
+            var endtimeInput = document.getElementById("endtime").value;
+
+            // Format queuetimeInput, starttimeInput, and endtimeInput into desired format
+            var queuetime = formatDate(new Date(queuetimeInput));
+            var starttime = formatDate(new Date(starttimeInput));
+            var endtime = formatDate(new Date(endtimeInput));
+
+            // Set formatted values back to the respective input fields
+            document.getElementById("queuetime").value = queuetime;
+            document.getElementById("starttime").value = starttime;
+            document.getElementById("endtime").value = endtime;
+
+            // Submit the form
+            event.target.submit();
+        }
+
+        function formatDate(date) {
+            var year = date.getFullYear();
+            var month = (date.getMonth() + 1).toString().padStart(2, '0');
+            var day = date.getDate().toString().padStart(2, '0');
+            var hours = date.getHours().toString().padStart(2, '0');
+            var minutes = date.getMinutes().toString().padStart(2, '0');
+            var seconds = date.getSeconds().toString().padStart(2, '0');
+
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        }
     </script>
 </body>
 </html>
