@@ -42,6 +42,14 @@ let { data: appointments, error } = await supabase1
 .select('*')
 .eq('a_region', 'L')
 
+if(error){
+    let { data: appointments, error } = await supabase2
+    .from('appointments')
+    .select('*')
+    .eq('a_region', 'L')
+    res.json(appointments);
+}
+
 res.json(appointments);
 })
 
@@ -51,6 +59,14 @@ app.get("/visayas", async (req,res) => {
     .select('*')
     .eq('a_region', 'V')
     
+    if(error){
+        let { data: appointments, error } = await supabase3
+        .from('appointments')
+        .select('*')
+        .eq('a_region', 'V')
+        res.json(appointments);
+    }
+
     res.json(appointments);
 })
 
@@ -59,7 +75,15 @@ app.get("/mindanao", async (req,res) => {
     .from('appointments')
     .select('*')
     .eq('a_region', 'M')
-    
+
+    if(error){
+        let { data: appointments, error } = await supabase2
+        .from('appointments')
+        .select('*')
+        .eq('a_region', 'M')
+        res.json(appointments);
+    }
+
     res.json(appointments);
 })
 
@@ -70,37 +94,45 @@ app.post("/addAppointment", async (req,res) => {
         console.log(req.body);
         //Luzon
         req = req.body;
+        req.id = id;
         if(req.region == 'L'){
-        let { data1, error1 } = await supabase1
+
+
+        let { data: data1, error: error1 } = await supabase1
         .from('appointments')
         .insert([
-        {a_id: id, a_region: req.region, a_status: req.status,
+        {a_id: req.id, a_region: req.region, a_status: req.status,
         a_queuetime: req.queuetime, a_queuedate: req.queuedate,
         a_starttime: req.starttime, a_endtime: req.endtime,
         a_type: req.type, a_isvirtual: req.isvirtual},
         ])
-        .select()
-
+        .select() 
+        console.log("data1: "+data1);
+        console.log("error1: "+error1);
         if(error1){
+            console.log("Unsuccessful insert to Node 1: "+req.id);
             queue1.push(req);
         } else {
-            console.log("Successful insert to Node 1");
+            console.log("Successful insert to Node 1: "+req.id);
         }
 
-        let { data2, error2 } = await supabase2
+
+        let { data: data2, error: error2 } = await supabase2
         .from('appointments')
         .insert([
-        {a_id: id, a_region: req.region, a_status: req.status,
+        {a_id: req.id, a_region: req.region, a_status: req.status,
         a_queuetime: req.queuetime, a_queuedate: req.queuedate,
         a_starttime: req.starttime, a_endtime: req.endtime,
         a_type: req.type, a_isvirtual: req.isvirtual},
         ])
         .select()
-
+        console.log("data2 "+data2);
+        console.log("error2: "+error2);
         if(error2){
+            console.log("Unsuccessful insert to Node 2: "+req.id);
             queue2.push(req);
         } else {
-            console.log("Successful insert to Node 2");
+            console.log("Successful insert to Node 2: "+req.id);
         }
 
         if(!error1){
@@ -110,10 +142,10 @@ app.post("/addAppointment", async (req,res) => {
             } 
         } else {
         //VisMin
-        let { data1, error1 } = await supabase1
+        let { data: data1, error: error1 } = await supabase1
         .from('appointments')
         .insert([
-        {a_id: id, a_region: req.region, a_status: req.status,
+        {a_id: req.id, a_region: req.region, a_status: req.status,
         a_queuetime: req.queuetime, a_queuedate: req.queuedate,
         a_starttime: req.starttime, a_endtime: req.endtime,
         a_type: req.type, a_isvirtual: req.isvirtual},
@@ -121,16 +153,17 @@ app.post("/addAppointment", async (req,res) => {
         .select()
 
         if(error1){
+            console.log("Unsuccessful insert to Node 1: "+req.id);
             queue1.push(req);
         } else {
-            console.log("Successful insert to Node 1");
+            console.log("Successful insert to Node 1: "+req.id);
         }
 
 
-        let { data3, error3 } = await supabase3
+        let { data: data3, error: error3 } = await supabase3
         .from('appointments')
         .insert([
-        {a_id: id, a_region: req.region, a_status: req.status,
+        {a_id: req.id, a_region: req.region, a_status: req.status,
         a_queuetime: req.queuetime, a_queuedate: req.queuedate,
         a_starttime: req.starttime, a_endtime: req.endtime,
         a_type: req.type, a_isvirtual: req.isvirtual},
@@ -138,9 +171,10 @@ app.post("/addAppointment", async (req,res) => {
         .select()
 
         if(error3){
+            console.log("Unsuccessful insert to Node 3: "+req.id);
             queue3.push(req);
         } else {
-            console.log("Successful insert to Node 3");
+            console.log("Successful insert to Node 3: "+req.id);
         }
 
         if(!error1){
@@ -157,25 +191,99 @@ app.post("/addAppointment", async (req,res) => {
 
 })
 
-// Function to retry failed inserts
-async function retryFailedInserts() {
-    while (queue.length > 0) {
-        const data = queue.shift(); // Retrieve the data from the queue
-        await handleInsert(data); // Retry inserting the data
-    }
-}
-
 // Function to periodically check and retry failed inserts
 async function checkAndRetry() {
     while (true) {
-        try {
-            await connectToDatabase(); // Attempt to connect to the database
-            console.log("Database connected!");
-            await retryFailedInserts(); // Retry failed inserts
-        } catch (error) {
-            console.error("Error connecting to database:", error.message);
+        if(queue1.length != 0){
+            console.log("Server retrying to insert in Node 1...");
+            // test connection
+            let { data: appointments, error } = await supabase1
+            .from('appointments')
+            .select('*')
+
+            if(!error){ //if connected
+                let req = queue1.shift(); // Retrieve the data from the queue
+                let { data: data1, error: error1 } = await supabase1
+                .from('appointments')
+                .insert([
+                {a_id: req.id, a_region: req.region, a_status: req.status,
+                a_queuetime: req.queuetime, a_queuedate: req.queuedate,
+                a_starttime: req.starttime, a_endtime: req.endtime,
+                a_type: req.type, a_isvirtual: req.isvirtual},
+                ])
+                .select()
+
+                if(error1){
+                    console.log("Unsuccessful insert to Node 1: "+req.id);
+                    queue1.push(req);
+                } else {
+                    console.log("Successful insert to Node 1: "+req.id);
+                }
+            } else {
+                console.log("Failed to insert in Node 1");
+            }
         }
-        await new Promise(resolve => setTimeout(resolve, 10000)); // Retry every 10 seconds
+
+        if(queue2.length != 0){
+            console.log("Server retrying to insert in Node 2...");
+            // test connection
+            let { data: appointments, error } = await supabase2
+            .from('appointments')
+            .select('*')
+
+            if(!error){ //if connected
+                let req = queue2.shift(); // Retrieve the data from the queue
+                let { data: data2, error: error2 } = await supabase2
+                .from('appointments')
+                .insert([
+                {a_id: req.id, a_region: req.region, a_status: req.status,
+                a_queuetime: req.queuetime, a_queuedate: req.queuedate,
+                a_starttime: req.starttime, a_endtime: req.endtime,
+                a_type: req.type, a_isvirtual: req.isvirtual},
+                ])
+                .select()
+
+                if(error2){
+                    console.log("Unsuccessful insert to Node 2: "+req.id);
+                    queue2.push(req);
+                } else {
+                    console.log("Successful insert to Node 2: "+req.id);
+                }
+            } else {
+                console.log("Failed to insert in Node 2");
+            }
+        }
+
+        if(queue3.length != 0){
+            console.log("Server retrying to insert in Node 3...");
+            // test connection
+            let { data: appointments, error } = await supabase3
+            .from('appointments')
+            .select('*')
+
+            if(!error){ //if connected
+                let req = queue1.shift(); // Retrieve the data from the queue
+                let { data: data3, error: error3 } = await supabase3
+                .from('appointments')
+                .insert([
+                {a_id: req.id, a_region: req.region, a_status: req.status,
+                a_queuetime: req.queuetime, a_queuedate: req.queuedate,
+                a_starttime: req.starttime, a_endtime: req.endtime,
+                a_type: req.type, a_isvirtual: req.isvirtual},
+                ])
+                .select()
+
+                if(error3){
+                    console.log("Unsuccessful insert to Node 3: "+req.id);
+                    queue3.push(req);
+                } else {
+                    console.log("Successful insert to Node 3: "+req.id);
+                }
+            } else {
+                console.log("Failed to insert in Node 3");
+            }
+        }
+        await new Promise(resolve => setTimeout(resolve, 5000)); // Retry every 10 seconds
     }
 }
 
@@ -192,6 +300,8 @@ function generateUUID() {
     
     return String(uuid);
 }
+
+checkAndRetry()
 
 app.listen(port, () => {
     console.log(`Server running on port ${port}.`);
