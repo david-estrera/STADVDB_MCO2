@@ -146,10 +146,6 @@ body {
     background-color: #f2f2f2;
 }
 
-#appointments-table tr:hover {
-    background-color: #ddd;
-}
-
 .footer {
     background-color: #333; 
     color: #fff;
@@ -186,4 +182,22 @@ body {
 
 .person span {
     display: block;
+}
+
+.edit-btn, 
+.delete-btn { 
+    background-color: #656565; 
+    color: white; 
+    border: none; 
+    border-radius: 10%; 
+    cursor: pointer; 
+    padding: 5px 10px; 
+    font-size: 14px;
+    margin-right: 5px; 
+    margin: 3px;
+}
+
+.edit-btn:hover, 
+.delete-btn:hover { 
+    background-color: #3f3f3f; 
 }

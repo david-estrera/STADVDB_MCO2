@@ -182,8 +182,8 @@
                 <td>${appointment.a_type}</td>
                 <td>${appointment.a_isvirtual}</td>
                 <td>
-                    <button onclick="editAppointment('${appointment.a_id}')">Edit</button>
-                    <button onclick="deleteAppointment('${appointment.a_id}')">Delete</button>
+                    <button class="edit-btn" onclick="editAppointment('${appointment.a_id}')">Edit</button> 
+                    <button class="delete-btn" onclick="deleteAppointment('${appointment.a_id}')">Delete</button>
                 </td>
             `;
             appointmentsBody.appendChild(row);
