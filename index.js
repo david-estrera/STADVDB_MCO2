@@ -33,16 +33,32 @@ app.get("/", (req,res) => {
     res.render("index.ejs");
 })
 
-app.get("/luzon", (req,res) => {
-    res.render("index.ejs");
+app.get("/luzon", async (req,res) => {
+    
+let { data: appointments, error } = await supabase1
+.from('appointments')
+.select('*')
+.eq('a_region', 'L')
+
+res.json(appointments);
 })
 
-app.get("/visayas", (req,res) => {
-    res.render("index.ejs");
+app.get("/visayas", async (req,res) => {
+    let { data: appointments, error } = await supabase1
+    .from('appointments')
+    .select('*')
+    .eq('a_region', 'V')
+    
+    res.json(appointments);
 })
 
-app.get("/mindanao", (req,res) => {
-    res.render("index.ejs");
+app.get("/mindanao", async (req,res) => {
+    let { data: appointments, error } = await supabase1
+    .from('appointments')
+    .select('*')
+    .eq('a_region', 'M')
+    
+    res.json(appointments);
 })
 
 app.post("/addAppointment", async (req,res) => {
