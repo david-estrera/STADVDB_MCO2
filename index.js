@@ -41,12 +41,14 @@ let { data: appointments, error } = await supabase1
 .from('appointments')
 .select('*')
 .eq('a_region', 'L')
+.order('a_queuetime', { ascending: false });
 
 if(error){
     let { data: appointments, error } = await supabase2
     .from('appointments')
     .select('*')
     .eq('a_region', 'L')
+    .order('a_queuetime', { ascending: false });
     res.json(appointments);
 }
 
@@ -58,12 +60,14 @@ app.get("/visayas", async (req,res) => {
     .from('appointments')
     .select('*')
     .eq('a_region', 'V')
-    
+    .order('a_queuetime', { ascending: false });
+
     if(error){
         let { data: appointments, error } = await supabase3
         .from('appointments')
         .select('*')
         .eq('a_region', 'V')
+        .order('a_queuetime', { ascending: false });
         res.json(appointments);
     }
 
@@ -75,12 +79,14 @@ app.get("/mindanao", async (req,res) => {
     .from('appointments')
     .select('*')
     .eq('a_region', 'M')
+    .order('a_queuetime', { ascending: false });
 
     if(error){
         let { data: appointments, error } = await supabase2
         .from('appointments')
         .select('*')
         .eq('a_region', 'M')
+        .order('a_queuetime', { ascending: false });
         res.json(appointments);
     }
 
