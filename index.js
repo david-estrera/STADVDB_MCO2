@@ -9,6 +9,8 @@ app.use(bodyParser.urlencoded({extended:true}));
 app.use(bodyParser.json());
 app.use(express.static("public"));
 
+
+
 //Global
 const supabaseUrl1 = 'https://byxjzrnusrpulzqhyavg.supabase.co'
 const supabaseKey1 = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJ5eGp6cm51c3JwdWx6cWh5YXZnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTI2Njc1OTQsImV4cCI6MjAyODI0MzU5NH0.OeowEgA_o1GiUMdksA9fIfOcVwsuvDTzk8gUxwI4GdY'
