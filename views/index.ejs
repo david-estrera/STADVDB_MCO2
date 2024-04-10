@@ -6,8 +6,6 @@
     <title>MCO2 GROUP 26</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
-
-
 </head>
 <body>
     <nav class="navbar">
@@ -30,43 +28,50 @@
         </div>
         <div id="form-container">
             <form action="/addAppointment" method="POST" class="appointment-form">
-                <label for="region">Region:</label>
-                <select name="region" id="region">
-                    <option value="L">Luzon</option>
-                    <option value="V">Visayas</option>
-                    <option value="M">Mindanao</option>
-                </select><br><br>
-                <label for="status">Status:</label>
-                <select name="status" id="status" required>
-                    <option value="Q">Queued</option>
-                    <option value="NS">Noshow</option>
-                    <option value="SV">Serving</option>
-                    <option value="X">Cancel</option>
-                    <option value="SK">Skip</option>
-                    <option value="C">Completed</option>
-                    <option value="A">Admitted</option>
-                </select><br><br>
-                <label for="queuetime">Queue Time</label>
-                <input type="time" name="queuetime" id="queuetime" required><br><br>
-                <label for="queuedate">Queue Date</label>
-                <input type="date" name="queuedate" id="queuedate" required><br><br>
-                <label for="starttime">Start Time</label>
-                <input type="time" name="starttime" id="starttime" required><br><br>
-                <label for="endtime">End Time</label>
-                <input type="time" name="endtime" id="endtime" required><br><br>
-                <label for="type">Type:</label>
-                <select name="type" id="type" required>
-                    <option value="CS">Consultation</option>
-                    <option value="IP">Inpatient</option>
-                </select><br><br>
-                <label for="isvirtual">Virtual Appointment
-                <input type="checkbox" name="isvirtual" id="isvirtual"><br><br>
-                </label>
-                <button type="submit">Submit</button>
+                    <label for="region">Region:</label>
+                    <select name="region" id="region">
+                        <option value="L">Luzon</option>
+                        <option value="V">Visayas</option>
+                        <option value="M">Mindanao</option>
+                    </select><br><br>
+                    <label for="status">Status:</label>
+                    <select name="status" id="status" required>
+                        <option value="Q">Queued</option>
+                        <option value="NS">Noshow</option>
+                        <option value="SV">Serving</option>
+                        <option value="X">Cancel</option>
+                        <option value="SK">Skip</option>
+                        <option value="C">Completed</option>
+                        <option value="A">Admitted</option>
+                    </select><br><br>
+                    <label for="queuetime">Queue Time</label>
+                    <input type="time" name="queuetime" id="queuetime" required><br><br>
+                    <label for="queuedate">Queue Date</label>
+                    <input type="date" name="queuedate" id="queuedate" required><br><br>
+                    <label for="starttime">Start Time</label>
+                    <input type="time" name="starttime" id="starttime" required><br><br>
+                    <label for="endtime">End Time</label>
+                    <input type="time" name="endtime" id="endtime" required><br><br>
+                    <label for="type">Type:</label>
+                    <select name="type" id="type" required>
+                        <option value="CS">Consultation</option>
+                        <option value="IP">Inpatient</option>
+                    </select><br><br>
+                    <div class="virtual-appointment-container">
+                        <input type="checkbox" name="isvirtual" id="isvirtual">
+                        <span>Virtual Appointment</span>
+                    </div>
+                                   
+                    
+                                        
+                    <button type="submit">Submit</button>
             </form>
         </div>
         <div id="table-container" style="display: none;">
-            <h2 id="table-title" style="text-align: center;"></h2>
+            <h2 id="table-title" class="table-title"></h2>
+            <div id="search-container" class="search-container">
+                <input type="text" id="search-id" oninput="searchById()" placeholder="Search by Appointment ID">
+            </div>
             <table id="appointments-table">
                 <thead>
                     <tr>
@@ -82,6 +87,7 @@
                     </tr>
                 </thead>
                 <tbody id="appointments-body">
+                    <!-- Appointment data will be populated here -->
                 </tbody>
             </table>
         </div>
@@ -154,6 +160,26 @@
                 appointmentsBody.appendChild(row);
             });
         }
+
+        function searchById() {
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("search-id");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("appointments-table");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0]; 
+        if (td) {
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+}
+
     </script>
 </body>
 </html>
