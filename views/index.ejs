@@ -82,6 +82,7 @@
                         <th>End Time</th>
                         <th>Type</th>
                         <th>Is Virtual</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="appointments-body">
@@ -163,23 +164,34 @@
         }
 
         function populateAppointmentsTable(appointments) {
-            var appointmentsBody = document.getElementById('appointments-body');
-            appointments.forEach(appointment => {
-                var row = document.createElement('tr');
-                row.innerHTML = `
-                    <td>${appointment.a_id}</td>
-                    <td>${appointment.a_region}</td>
-                    <td>${appointment.a_status}</td>
-                    <td>${appointment.a_queuetime}</td>
-                    <td>${appointment.a_queuedate}</td>
-                    <td>${appointment.a_starttime}</td>
-                    <td>${appointment.a_endtime}</td>
-                    <td>${appointment.a_type}</td>
-                    <td>${appointment.a_isvirtual}</td> 
-                `;
-                appointmentsBody.appendChild(row);
-            });
-        }
+        var appointmentsBody = document.getElementById('appointments-body');
+        var tableTitle = document.getElementById('table-title');
+
+        appointmentsBody.innerHTML = '';
+
+        appointments.forEach(appointment => {
+            var row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${appointment.a_id}</td>
+                <td>${appointment.a_region}</td>
+                <td>${appointment.a_status}</td>
+                <td>${appointment.a_queuetime}</td>
+                <td>${appointment.a_queuedate}</td>
+                <td>${appointment.a_starttime}</td>
+                <td>${appointment.a_endtime}</td>
+                <td>${appointment.a_type}</td>
+                <td>${appointment.a_isvirtual}</td>
+                <td>
+                    <button onclick="editAppointment('${appointment.a_id}')">Edit</button>
+                    <button onclick="deleteAppointment('${appointment.a_id}')">Delete</button>
+                </td>
+            `;
+            appointmentsBody.appendChild(row);
+        });
+
+
+        tableTitle.textContent += ` (${appointmentsBody.children.length} rows)`;
+    }
 
         function searchById() {
             var input, filter, table, tr, td, i, txtValue;
@@ -229,6 +241,14 @@
             var seconds = date.getSeconds().toString().padStart(2, '0');
 
             return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        }
+
+        function editAppointment(appointmentId) {
+            console.log("Editing appointment with ID:", appointmentId);
+        }
+
+        function deleteAppointment(appointmentId) {
+            console.log("Deleting appointment with ID:", appointmentId);
         }
     </script>
 </body>
