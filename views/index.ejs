@@ -1,1 +1,207 @@
-<h1>hello</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MCO2 GROUP 26</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="navbar-left">
+                <h2 class="navbar-title">MCO2 GROUP 26</h2>
+            </div>
+            <div class="navbar-right">
+                <a href="#" class="navbar-link" onclick="showForm()">Home</a>
+                <a href="#" class="navbar-link" onclick="showTable('luzon')">Luzon Appointments</a>
+                <a href="#" class="navbar-link" onclick="showTable('visayas')">Visayas Appointments</a>
+                <a href="#" class="navbar-link" onclick="showTable('mindanao')">Mindanao Appointments</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" id="main-container">
+        <div id="header-container">
+            <h1 id="header">Medical Appointment System</h1>
+        </div>
+        <div id="form-container">
+            <form action="/addAppointment" method="POST" class="appointment-form">
+                    <label for="region">Region:</label>
+                    <select name="region" id="region">
+                        <option value="L">Luzon</option>
+                        <option value="V">Visayas</option>
+                        <option value="M">Mindanao</option>
+                    </select><br><br>
+                    <label for="status">Status:</label>
+                    <select name="status" id="status" required>
+                        <option value="Q">Queued</option>
+                        <option value="NS">Noshow</option>
+                        <option value="SV">Serving</option>
+                        <option value="X">Cancel</option>
+                        <option value="SK">Skip</option>
+                        <option value="C">Completed</option>
+                        <option value="A">Admitted</option>
+                    </select><br><br>
+                    <label for="queuetime">Queue Time</label>
+                    <input type="time" name="queuetime" id="queuetime" required><br><br>
+                    <label for="queuedate">Queue Date</label>
+                    <input type="date" name="queuedate" id="queuedate" required><br><br>
+                    <label for="starttime">Start Time</label>
+                    <input type="time" name="starttime" id="starttime" required><br><br>
+                    <label for="endtime">End Time</label>
+                    <input type="time" name="endtime" id="endtime" required><br><br>
+                    <label for="type">Type:</label>
+                    <select name="type" id="type" required>
+                        <option value="CS">Consultation</option>
+                        <option value="IP">Inpatient</option>
+                    </select><br><br>
+                    <div class="virtual-appointment-container">
+                        <input type="checkbox" name="isvirtual" id="isvirtual">
+                        <span>Virtual Appointment</span>
+                    </div>
+                                   
+                    
+                                        
+                    <button type="submit">Submit</button>
+            </form>
+        </div>
+        <div id="table-container" style="display: none;">
+            <h2 id="table-title" class="table-title"></h2>
+            <div id="search-container" class="search-container">
+                <input type="text" id="search-id" oninput="searchById()" placeholder="Search by Appointment ID">
+            </div>
+            <table id="appointments-table">
+                <thead>
+                    <tr>
+                        <th>Appointment ID</th>
+                        <th>Region</th>
+                        <th>Status</th>
+                        <th>Queue Time</th>
+                        <th>Queue Date</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Type</th>
+                        <th>Is Virtual</th>
+                    </tr>
+                </thead>
+                <tbody id="appointments-body">
+                </tbody>
+            </table>
+        </div>
+    </div>
+     <footer class="footer">
+        <div class="container">
+            <h2 class="footer-title">Members</h2>
+            <div class="footer-content">
+                <div class="person">
+                    <img src="pryne.png" alt="Person 1">
+                    <span>Arteche, Pryne Melton</span>
+                </div>
+                <div class="person">
+                    <img src="inigo.jpg" alt="Person 2">
+                    <span>Diaz, Rafael Inigo</span>
+                </div>
+                <div class="person">
+                    <img src="david.png" alt="Person 3">
+                    <span>Estrera, David Joshua</span>
+                </div>
+                <div class="person">
+                    <img src="elijah.png" alt="Person 4">
+                    <span>Rosario, Elijah Nicolo</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+
+    <script>
+        function showForm() {
+            var headerContainer = document.getElementById('header-container');
+            var formContainer = document.getElementById('form-container');
+            var tableContainer = document.getElementById('table-container');
+
+            headerContainer.style.display = 'block';  
+            formContainer.style.display = 'block';  
+            tableContainer.style.display = 'none';  
+        }
+
+        async function showTable(region) {
+            var headerContainer = document.getElementById('header-container');
+            var formContainer = document.getElementById('form-container');
+            var tableContainer = document.getElementById('table-container');
+
+            headerContainer.style.display = 'none';  
+            formContainer.style.display = 'none';   
+            tableContainer.style.display = 'block';  
+
+            var appointmentsBody = document.getElementById('appointments-body');
+            appointmentsBody.innerHTML = '';
+
+                var tableTitle = document.getElementById('table-title');
+        switch(region) {
+            case 'luzon':
+                tableTitle.textContent = 'Luzon Appointments';
+                break;
+            case 'visayas':
+                tableTitle.textContent = 'Visayas Appointments';
+                break;
+            case 'mindanao':
+                tableTitle.textContent = 'Mindanao Appointments';
+                break;
+            default:
+                tableTitle.textContent = 'Appointments';
+        }
+
+            var appointments = await fetchAppointments(region);
+            populateAppointmentsTable(appointments);
+        }
+
+        async function fetchAppointments(region) {
+            var response = await fetch(`/${region}`);
+            var data = await response.json();
+            return data;
+        }
+
+        function populateAppointmentsTable(appointments) {
+            var appointmentsBody = document.getElementById('appointments-body');
+            appointments.forEach(appointment => {
+                var row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${appointment.a_id}</td>
+                    <td>${appointment.a_region}</td>
+                    <td>${appointment.a_status}</td>
+                    <td>${appointment.a_queuetime}</td>
+                    <td>${appointment.a_queuedate}</td>
+                    <td>${appointment.a_starttime}</td>
+                    <td>${appointment.a_endtime}</td>
+                    <td>${appointment.a_type}</td>
+                    <td>${appointment.a_isvirtual}</td>
+                `;
+                appointmentsBody.appendChild(row);
+            });
+        }
+
+        function searchById() {
+    var input, filter, table, tr, td, i, txtValue;
+    input = document.getElementById("search-id");
+    filter = input.value.toUpperCase();
+    table = document.getElementById("appointments-table");
+    tr = table.getElementsByTagName("tr");
+    for (i = 0; i < tr.length; i++) {
+        td = tr[i].getElementsByTagName("td")[0]; 
+        if (td) {
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+}
+
+    </script>
+</body>
+</html>
