@@ -82,6 +82,7 @@
                         <th>End Time</th>
                         <th>Type</th>
                         <th>Is Virtual</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="appointments-body">
@@ -164,6 +165,7 @@
 
         function populateAppointmentsTable(appointments) {
             var appointmentsBody = document.getElementById('appointments-body');
+            
             appointments.forEach(appointment => {
                 var row = document.createElement('tr');
                 row.innerHTML = `
@@ -175,7 +177,11 @@
                     <td>${appointment.a_starttime}</td>
                     <td>${appointment.a_endtime}</td>
                     <td>${appointment.a_type}</td>
-                    <td>${appointment.a_isvirtual}</td> 
+                    <td>${appointment.a_isvirtual}</td>
+                    <td>
+                        <button onclick="editAppointment('${appointment.a_id}')">Edit</button>
+                        <button onclick="deleteAppointment('${appointment.a_id}')">Delete</button>
+                    </td>
                 `;
                 appointmentsBody.appendChild(row);
             });
@@ -229,6 +235,14 @@
             var seconds = date.getSeconds().toString().padStart(2, '0');
 
             return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        }
+
+        function editAppointment(appointmentId) {
+            console.log("Editing appointment with ID:", appointmentId);
+        }
+
+        function deleteAppointment(appointmentId) {
+            console.log("Deleting appointment with ID:", appointmentId);
         }
     </script>
 </body>
