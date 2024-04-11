@@ -68,8 +68,12 @@
         <div id="table-container" style="display: none;">
             <h2 id="table-title" class="table-title"></h2>
             <div id="search-container" class="search-container">
-                <input type="text" id="search-id" oninput="searchById()" placeholder="Search by Appointment ID">
+                <label for="search-id">Search by Appointment ID:</label>
+                <input type="text" id="search-id" oninput="searchById()" placeholder="Enter Appointment ID">
+                <label for="delete-id">Delete by Appointment ID:</label>
+                <input type="text" id="delete-id" oninput="deleteById()" placeholder="Enter Appointment ID">
             </div>
+            
             <table id="appointments-table">
                 <thead>
                     <tr>
@@ -82,7 +86,6 @@
                         <th>End Time</th>
                         <th>Type</th>
                         <th>Is Virtual</th>
-                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="appointments-body">
@@ -181,10 +184,6 @@
                 <td>${appointment.a_endtime}</td>
                 <td>${appointment.a_type}</td>
                 <td>${appointment.a_isvirtual}</td>
-                <td>
-                    <button class="edit-btn" onclick="editAppointment('${appointment.a_id}')">Edit</button> 
-                    <button class="delete-btn" onclick="deleteAppointment('${appointment.a_id}')">Delete</button>
-                </td>
             `;
             appointmentsBody.appendChild(row);
         });
@@ -250,6 +249,27 @@
         function deleteAppointment(appointmentId) {
             console.log("Deleting appointment with ID:", appointmentId);
         }
+
+        function deleteById() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("delete-id");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("appointments-table");
+        tr = table.getElementsByTagName("tr");
+        for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0]; 
+            if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    // Perform deletion operation for the corresponding appointment
+                    var appointmentId = txtValue.trim(); // Get the Appointment ID
+                    deleteAppointment(appointmentId); // Call the deleteAppointment function with the ID
+                    tr[i].style.display = "none"; // Hide the row from the table
+                }
+            }
+        }
+    }
+
     </script>
 </body>
 </html>

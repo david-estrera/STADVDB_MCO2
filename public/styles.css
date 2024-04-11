@@ -114,7 +114,9 @@ body {
 }
 
 .search-container {
-    margin-bottom: 20px;
+    font-family: 'Roboto', sans-serif; 
+    margin-bottom: 20px; 
+    margin-left: -16px;
 }
 
 #search-id {
@@ -123,6 +125,7 @@ body {
     border: 1px solid #ccc;
     border-radius: 5px;
     font-size: 16px;
+    margin-bottom: 10px; 
 }
 
 #appointments-table {
@@ -184,20 +187,16 @@ body {
     display: block;
 }
 
-.edit-btn, 
-.delete-btn { 
-    background-color: #656565; 
-    color: white; 
-    border: none; 
-    border-radius: 10%; 
-    cursor: pointer; 
-    padding: 5px 10px; 
-    font-size: 14px;
-    margin-right: 5px; 
-    margin: 3px;
+
+
+
+
+#delete-id {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-bottom: 10px; /* Add margin-bottom to match the spacing */
 }
 
-.edit-btn:hover, 
-.delete-btn:hover { 
-    background-color: #3f3f3f; 
-}
