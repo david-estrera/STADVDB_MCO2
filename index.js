@@ -1,6 +1,7 @@
 import express from "express";
 import bodyParser from "body-parser"
 import {createClient} from '@supabase/supabase-js'
+import e from "express";
 
 const app = express();
 const port = 3000;
@@ -31,6 +32,10 @@ const queue1 = [];
 const queue2 = [];
 const queue3 = [];
 
+const dqueue1 = [];
+const dqueue2 = [];
+const dqueue3 = [];
+
 app.get("/", (req,res) => {
     res.render("index.ejs");
 })
@@ -52,9 +57,8 @@ if(error){
     .eq('a_region', 'L')
     .order('a_queuetime', { ascending: false });
     res.json(appointments);
-}
-
-res.json(appointments);
+} else {
+    res.json(appointments);}
 })
 
 app.get("/visayas", async (req,res) => {
@@ -74,9 +78,8 @@ app.get("/visayas", async (req,res) => {
         .eq('a_region', 'V')
         .order('a_queuetime', { ascending: false });
         res.json(appointments);
-    }
-
-    res.json(appointments);
+    }else {
+        res.json(appointments);}
 })
 
 app.get("/mindanao", async (req,res) => {
@@ -96,9 +99,8 @@ app.get("/mindanao", async (req,res) => {
         .eq('a_region', 'M')
         .order('a_queuetime', { ascending: false });
         res.json(appointments);
-    }
-
-    res.json(appointments);
+    }else {
+        res.json(appointments);}
 })
 
 app.post("/addAppointment", async (req,res) => {
@@ -297,6 +299,83 @@ async function checkAndRetry() {
                 console.log("Failed to insert in Node 3");
             }
         }
+
+
+        if(dqueue1.length != 0){
+            console.log("Server retrying to delete in Node 1...");
+            // test connection
+            let { data: appointments, error } = await supabase1
+            .from('appointments')
+            .select('*')
+
+            if(!error){ //if connected
+                let id = dqueue1.shift(); // Retrieve the data from the queue
+                const { data: data1, error: error1 } = await supabase1
+                .from('appointments')
+                .delete()
+                .eq('a_id', id);
+
+                if(error1){
+                    console.log("Unsuccessful delete to Node 1: "+id);
+                    dqueue1.push(id);
+                } else {
+                    console.log("Successful delete to Node 1: "+id);
+                }
+            } else {
+                console.log("Failed to delete in Node 1");
+            }
+        }
+
+        if(dqueue2.length != 0){
+            console.log("Server retrying to delete in Node 2...");
+            // test connection
+            let { data: appointments, error } = await supabase2
+            .from('appointments')
+            .select('*')
+
+            if(!error){ //if connected
+                let id = dqueue2.shift(); // Retrieve the data from the queue
+                const { data: data2, error: error2 } = await supabase2
+                .from('appointments')
+                .delete()
+                .eq('a_id', id);
+
+                if(error2){
+                    console.log("Unsuccessful delete to Node 2: "+id);
+                    dqueue2.push(id);
+                } else {
+                    console.log("Successful delete to Node 2: "+id);
+                }
+            } else {
+                console.log("Failed to delete in Node 2");
+            }
+        }
+
+        if(dqueue3.length != 0){
+            console.log("Server retrying to delete in Node 3...");
+            // test connection
+            let { data: appointments, error } = await supabase3
+            .from('appointments')
+            .select('*')
+
+            if(!error){ //if connected
+                let id = dqueue3.shift(); // Retrieve the data from the queue
+                const { data: data3, error: error3 } = await supabase3
+                .from('appointments')
+                .delete()
+                .eq('a_id', id);
+
+                if(error3){
+                    console.log("Unsuccessful delete to Node 3: "+id);
+                    dqueue3.push(id);
+                } else {
+                    console.log("Successful delete to Node 3: "+id);
+                }
+            } else {
+                console.log("Failed to delete in Node 3");
+            }
+        }
+
         await new Promise(resolve => setTimeout(resolve, 5000)); // Retry every 10 seconds
     }
 }
@@ -305,6 +384,7 @@ app.delete("/deleteAppointment/:id", async (req, res) => {
     const { id } = req.params;
     try {
         // Attempt to delete the appointment from all three databases
+
         const { data: data1, error: error1 } = await supabase1
             .from('appointments')
             .delete()
@@ -318,9 +398,22 @@ app.delete("/deleteAppointment/:id", async (req, res) => {
             .delete()
             .eq('a_id', id);
 
+            console.log("error1: "+error1);
+            console.log("error2: "+error2);
+            console.log("error3: "+error3);
+
         // Check if any of the operations encountered errors
-        if (error1 || error2 || error3) {
-            console.log(`Error deleting appointment with ID ${id}:`, error1 || error2 || error3);
+        if (error1) {
+            console.log(`Error deleting appointment in Node 1 with ID ${id}:`, error1);
+            push.dqueue1(id);
+            res.status(500).json({ error: 'Failed to delete appointment' });
+        } else if (error2) {
+            console.log(`Error deleting appointment in Node 2 with ID ${id}:`, error2);
+            push.dqueue2(id);
+            res.status(500).json({ error: 'Failed to delete appointment' });
+        } else if (error3) {
+            console.log(`Error deleting appointment in Node 3 with ID ${id}:`, error3);
+            push.dqueue3(id);
             res.status(500).json({ error: 'Failed to delete appointment' });
         } else {
             console.log(`Successfully deleted appointment with ID ${id}`);
