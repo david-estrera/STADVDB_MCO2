@@ -36,7 +36,7 @@ app.get("/", (req,res) => {
 })
 
 app.get("/luzon", async (req,res) => {
-    
+    console.log("Getting data from node 1...");
 let { data: appointments, error } = await supabase1
 .from('appointments')
 .select('*')
@@ -44,6 +44,8 @@ let { data: appointments, error } = await supabase1
 .order('a_queuetime', { ascending: false });
 
 if(error){
+    console.log("Error getting data from node 1");
+    console.log("Getting data from node 2...");
     let { data: appointments, error } = await supabase2
     .from('appointments')
     .select('*')
@@ -56,6 +58,7 @@ res.json(appointments);
 })
 
 app.get("/visayas", async (req,res) => {
+    console.log("Getting data from node 1...");
     let { data: appointments, error } = await supabase1
     .from('appointments')
     .select('*')
@@ -63,6 +66,8 @@ app.get("/visayas", async (req,res) => {
     .order('a_queuetime', { ascending: false });
 
     if(error){
+        console.log("Error getting data from node 1");
+        console.log("Getting data from node 3...");
         let { data: appointments, error } = await supabase3
         .from('appointments')
         .select('*')
@@ -75,6 +80,7 @@ app.get("/visayas", async (req,res) => {
 })
 
 app.get("/mindanao", async (req,res) => {
+    console.log("Getting data from node 1...");
     let { data: appointments, error } = await supabase1
     .from('appointments')
     .select('*')
@@ -82,6 +88,8 @@ app.get("/mindanao", async (req,res) => {
     .order('a_queuetime', { ascending: false });
 
     if(error){
+        console.log("Error getting data from node 1");
+        console.log("Getting data from node 3...");
         let { data: appointments, error } = await supabase2
         .from('appointments')
         .select('*')
