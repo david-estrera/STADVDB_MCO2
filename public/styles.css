@@ -200,3 +200,18 @@ body {
     margin-bottom: 10px; /* Add margin-bottom to match the spacing */
 }
 
+#delete-btn {
+    background-color: #ff3333;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+#delete-btn:hover {
+    background-color: #ff6666;
+}
+
+

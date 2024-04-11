@@ -68,11 +68,15 @@
         <div id="table-container" style="display: none;">
             <h2 id="table-title" class="table-title"></h2>
             <div id="search-container" class="search-container">
-                <label for="search-id">Search by Appointment ID:</label>
+                <label for="search-id" style="font-family: 'Roboto', sans-serif; margin-bottom: 5px;">Search by Appointment ID:</label>
                 <input type="text" id="search-id" oninput="searchById()" placeholder="Enter Appointment ID">
-                <label for="delete-id">Delete by Appointment ID:</label>
-                <input type="text" id="delete-id" oninput="deleteById()" placeholder="Enter Appointment ID">
+                <label for="delete-id" style="font-family: 'Roboto', sans-serif; margin-bottom: 5px;">Delete by Appointment ID:</label>
+                <input type="text" id="delete-id" oninput="checkDeleteInput()" placeholder="Enter Appointment ID">
+                <button id="delete-btn" onclick="deleteAppointmentById()" disabled>Delete</button>
             </div>
+            
+            
+            
             
             <table id="appointments-table">
                 <thead>
@@ -210,6 +214,18 @@
                 }
             }
         }
+
+        function checkDeleteInput() {
+        var deleteInput = document.getElementById("delete-id").value.trim();
+        var deleteButton = document.getElementById("delete-btn");
+
+        if (deleteInput) {
+            deleteButton.disabled = false;
+        } else {
+            deleteButton.disabled = true;
+        }
+    }
+
 
         function formatAndSubmit(event) {
             event.preventDefault();
