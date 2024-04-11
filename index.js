@@ -293,6 +293,38 @@ async function checkAndRetry() {
     }
 }
 
+app.delete("/deleteAppointment/:id", async (req, res) => {
+    const { id } = req.params;
+    try {
+        // Attempt to delete the appointment from all three databases
+        const { data: data1, error: error1 } = await supabase1
+            .from('appointments')
+            .delete()
+            .eq('a_id', id);
+        const { data: data2, error: error2 } = await supabase2
+            .from('appointments')
+            .delete()
+            .eq('a_id', id);
+        const { data: data3, error: error3 } = await supabase3
+            .from('appointments')
+            .delete()
+            .eq('a_id', id);
+
+        // Check if any of the operations encountered errors
+        if (error1 || error2 || error3) {
+            console.log(`Error deleting appointment with ID ${id}:`, error1 || error2 || error3);
+            res.status(500).json({ error: 'Failed to delete appointment' });
+        } else {
+            console.log(`Successfully deleted appointment with ID ${id}`);
+            res.status(200).json({ message: 'Appointment deleted successfully' });
+        }
+    } catch (error) {
+        console.log(`Error deleting appointment with ID ${id}:`, error);
+        res.status(500).json({ error: 'Failed to delete appointment' });
+    }
+});
+
+
 function generateUUID() {
     // Generate a random hexadecimal string for each section of the UUID
     const section1 = Math.random().toString(16).slice(2, 10);

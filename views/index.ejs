@@ -262,29 +262,35 @@
             console.log("Editing appointment with ID:", appointmentId);
         }
 
-        function deleteAppointment(appointmentId) {
-            console.log("Deleting appointment with ID:", appointmentId);
-        }
+        async function deleteAppointmentById() {
+        var appointmentId = document.getElementById("delete-id").value.trim();
 
-        function deleteById() {
-        var input, filter, table, tr, td, i, txtValue;
-        input = document.getElementById("delete-id");
-        filter = input.value.toUpperCase();
-        table = document.getElementById("appointments-table");
-        tr = table.getElementsByTagName("tr");
-        for (i = 0; i < tr.length; i++) {
-            td = tr[i].getElementsByTagName("td")[0]; 
-            if (td) {
-                txtValue = td.textContent || td.innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                    // Perform deletion operation for the corresponding appointment
-                    var appointmentId = txtValue.trim(); // Get the Appointment ID
-                    deleteAppointment(appointmentId); // Call the deleteAppointment function with the ID
-                    tr[i].style.display = "none"; // Hide the row from the table
-                }
+        try {
+            const response = await fetch(`/deleteAppointment/${appointmentId}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                console.log(`Appointment with ID ${appointmentId} deleted successfully`);
+
+                // Fetch the updated list of appointments
+                const region = ''; // Set the appropriate region here
+                const appointments = await fetchAppointments(region);
+
+                // Repopulate the table with the new data
+                populateAppointmentsTable(appointments);
+            } else {
+                console.error(`Failed to delete appointment with ID ${appointmentId}`);
+                // Handle the error, show a message to the user, etc.
             }
+        } catch (error) {
+            console.error(`Error deleting appointment with ID ${appointmentId}:`, error);
+            // Handle the error, show a message to the user, etc.
         }
     }
+
+
+
 
     </script>
 </body>
